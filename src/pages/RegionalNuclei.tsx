@@ -94,7 +94,7 @@ export default function RegionalNuclei() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen p-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -145,8 +145,8 @@ export default function RegionalNuclei() {
         )}
       </div>
 
-      <Card>
-        <CardContent className="p-6">
+      <Card className="bg-white border-gray-200 shadow-sm">
+        <CardContent className="p-6 bg-white">
           <div className="relative">
             <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
             <Input
@@ -177,17 +177,17 @@ export default function RegionalNuclei() {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse bg-white border-gray-200">
             <thead>
               <tr>
-                <th className="border px-2 py-1 bg-gray-100">Nome</th>
-                <th className="border px-2 py-1 bg-gray-100">Sigla</th>
-                <th className="border px-2 py-1 bg-gray-100">Região</th>
-                <th className="border px-2 py-1 bg-gray-100">Responsável Técnico</th>
-                <th className="border px-2 py-1 bg-gray-100">Telefone</th>
-                <th className="border px-2 py-1 bg-gray-100">E-mail</th>
-                <th className="border px-2 py-1 bg-gray-100">Contato Alternativo</th>
-                <th className="border px-2 py-1 bg-gray-100">Ações</th>
+                <th className="border px-2 py-1 bg-gray-50">Nome</th>
+                <th className="border px-2 py-1 bg-gray-50">Sigla</th>
+                <th className="border px-2 py-1 bg-gray-50">Região</th>
+                <th className="border px-2 py-1 bg-gray-50">Responsável Técnico</th>
+                <th className="border px-2 py-1 bg-gray-50">Telefone</th>
+                <th className="border px-2 py-1 bg-gray-50">E-mail</th>
+                <th className="border px-2 py-1 bg-gray-50">Contato Alternativo</th>
+                <th className="border px-2 py-1 bg-gray-50">Ações</th>
               </tr>
             </thead>
             <tbody>

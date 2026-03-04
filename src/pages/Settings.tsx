@@ -106,10 +106,12 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center">
-        <SettingsIcon className="h-6 w-6 mr-2" />
-        <h1 className="text-2xl font-bold text-gray-900">Configurações do Sistema</h1>
+    <div className="page-section">
+      <div className="page-header">
+        <div className="flex items-center">
+          <SettingsIcon className="h-6 w-6 mr-2" />
+          <h1 className="page-title">Configurações do Sistema</h1>
+        </div>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
@@ -121,14 +123,14 @@ export default function Settings() {
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Configurações Gerais</CardTitle>
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="text-gray-900">Configurações Gerais</CardTitle>
               <CardDescription>
                 Configure as informações básicas do sistema
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 bg-white">
               {configurations.map((config) => (
                 <div key={config.chave} className="space-y-2">
                   <Label htmlFor={config.chave}>
@@ -149,20 +151,20 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2" />
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center text-gray-900">
+                <Users className="h-5 w-5 mr-2 text-gray-600" />
                 Gerenciar Usuários
               </CardTitle>
               <CardDescription>
                 Visualizar usuários do sistema
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white">
               <div className="space-y-4">
                 {usersList.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
                     <div className="flex-1">
                       <h3 className="font-medium">{user.username}</h3>
                       <p className="text-sm text-gray-600">ID: {user.id}</p>
@@ -180,17 +182,17 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Bell className="h-5 w-5 mr-2" />
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center text-gray-900">
+                <Bell className="h-5 w-5 mr-2 text-gray-600" />
                 Sistema de Notificações
               </CardTitle>
               <CardDescription>
                 Configure e gerencie as notificações do sistema
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 bg-white">
               <div className="space-y-4">
                 <div>
                   <Label>Intervalos de Notificação</Label>
@@ -224,17 +226,17 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="database" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Database className="h-5 w-5 mr-2" />
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center text-gray-900">
+                <Database className="h-5 w-5 mr-2 text-gray-600" />
                 Informações do Banco de Dados
               </CardTitle>
               <CardDescription>
                 Estatísticas e informações sobre o banco de dados
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <h4 className="font-medium text-blue-900">Conectividade</h4>

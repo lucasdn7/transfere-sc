@@ -6,31 +6,47 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Cores primárias melhoradas com melhor contraste */
+    --background: 0 0% 98%; /* Um cinza muito claro em vez de branco puro */
+    --foreground: 210 24% 16%; /* Texto mais escuro para melhor legibilidade */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 24% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --popover-foreground: 210 24% 16%;
+    --primary: 217 91% 60%; /* Azul mais vibrante e acessível */
+    --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary-foreground: 210 24% 16%;
     --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --muted-foreground: 215.4 16.3% 44%; /* Mais escuro para melhor legibilidade */
+    --accent: 217 91% 60%; /* Usar primary como accent para consistência */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --ring: 217 91% 60%; /* Consistente com primary */
+    
+    /* Cores de gráfico melhoradas */
+    --chart-1: 217 91% 60%; /* Azul consistente */
+    --chart-2: 142 76% 36%; /* Verde mais escuro */
+    --chart-3: 38 92% 50%; /* Laranja mais vibrante */
+    --chart-4: 262 83% 58%; /* Roxo mais acessível */
+    --chart-5: 348 83% 47%; /* Rosa mais escuro */
+    
+    /* Variáveis adicionais para melhor organização */
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --info: 217 91% 60%;
+    --radius: 0.625rem; /* Border radius um pouco maior para visual mais moderno */
+    
+    /* Espaçamentos consistentes */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
   }
 
   .dark {
@@ -68,10 +84,56 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
+    font-size: 16px; /* Tamanho base aumentado para melhor legibilidade */
+    line-height: 1.6; /* Altura de linha melhorada para legibilidade */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Melhorias de tipografia */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: var(--spacing-md);
+    color: hsl(var(--foreground));
+  }
+  
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.875rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.25rem; }
+  h5 { font-size: 1.125rem; }
+  h6 { font-size: 1rem; }
+  
+  p {
+    margin-bottom: var(--spacing-md);
+    max-width: 65ch; /* Largura máxima para melhor legibilidade */
+  }
+  
+  /* Links mais acessíveis */
+  a {
+    color: hsl(var(--primary));
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  a:hover {
+    color: hsl(var(--primary) / 0.8);
+    text-decoration: underline;
   }
 }
 
-/* Font size classes */
+/* Font size classes melhoradas */
+.text-xs { font-size: 0.75rem; line-height: 1.4; }
+.text-sm { font-size: 0.875rem; line-height: 1.5; }
+.text-base { font-size: 1rem; line-height: 1.6; }
+.text-lg { font-size: 1.125rem; line-height: 1.6; }
+.text-xl { font-size: 1.25rem; line-height: 1.5; }
+.text-2xl { font-size: 1.5rem; line-height: 1.4; }
+.text-3xl { font-size: 1.875rem; line-height: 1.3; }
+.text-4xl { font-size: 2.25rem; line-height: 1.2; }
+
+/* Classes de fonte legadas mantidas para compatibilidade */
 .font-small {
   font-size: 0.875rem;
 }
@@ -96,6 +158,193 @@
 .font-large h1 { font-size: 2.25rem; }
 .font-large h2 { font-size: 1.875rem; }
 .font-large h3 { font-size: 1.5rem; }
+
+/* Componentes personalizados para melhor organização */
+@layer components {
+  /* Cards melhorados */
+  .card {
+    @apply bg-card text-card-foreground rounded-lg border border-border shadow-sm;
+    padding: var(--spacing-lg);
+    transition: all 0.2s ease;
+  }
+  
+  .card:hover {
+    @apply shadow-md;
+    transform: translateY(-1px);
+  }
+  
+  .card-header {
+    @apply flex flex-col space-y-1.5 p-6 pb-4;
+  }
+  
+  .card-title {
+    @apply text-2xl font-semibold leading-none tracking-tight;
+    color: hsl(var(--foreground));
+  }
+  
+  .card-description {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  .card-content {
+    @apply p-6 pt-0;
+  }
+  
+  .card-footer {
+    @apply flex items-center p-6 pt-0;
+  }
+  
+  /* Botões melhorados */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 2.5rem;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  
+  .btn-outline {
+    @apply border border-input hover:bg-accent hover:text-accent-foreground;
+  }
+  
+  /* Badges melhorados */
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .badge-default {
+    @apply border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+  
+  .badge-secondary {
+    @apply border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  
+  .badge-success {
+    @apply border-transparent bg-green-100 text-green-800 hover:bg-green-200;
+  }
+  
+  .badge-warning {
+    @apply border-transparent bg-yellow-100 text-yellow-800 hover:bg-yellow-200;
+  }
+  
+  .badge-danger {
+    @apply border-transparent bg-red-100 text-red-800 hover:bg-red-200;
+  }
+  
+  /* Container principal */
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+  
+  @media (min-width: 640px) {
+    .container { max-width: 640px; }
+  }
+  
+  @media (min-width: 768px) {
+    .container { max-width: 768px; }
+  }
+  
+  @media (min-width: 1024px) {
+    .container { max-width: 1024px; }
+  }
+  
+  @media (min-width: 1280px) {
+    .container { max-width: 1280px; }
+  }
+  
+  /* Grid responsivo melhorado */
+  .grid-responsive {
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  /* Seções de página */
+  .page-section {
+    padding: var(--spacing-xl) 0;
+  }
+  
+  .page-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .page-title {
+    @apply text-3xl font-bold;
+    color: hsl(var(--foreground));
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .page-description {
+    @apply text-lg text-muted-foreground;
+    max-width: 65ch;
+  }
+  
+  /* Filtros e controles */
+  .filters-section {
+    @apply bg-card border border-border rounded-lg p-4 mb-6;
+  }
+  
+  .filters-grid {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  /* Métricas e estatísticas */
+  .metrics-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .metric-card {
+    @apply bg-card border border-border rounded-lg p-6;
+    transition: all 0.2s ease;
+  }
+  
+  .metric-card:hover {
+    @apply shadow-md;
+    transform: translateY(-2px);
+  }
+  
+  .metric-value {
+    @apply text-3xl font-bold;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .metric-label {
+    @apply text-sm text-muted-foreground;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .metric-change {
+    @apply text-xs font-medium;
+  }
+  
+  .metric-change-positive {
+    color: hsl(var(--success));
+  }
+  
+  .metric-change-negative {
+    color: hsl(var(--destructive));
+  }
+  
+  .metric-change-neutral {
+    color: hsl(var(--muted-foreground));
+  }
+}
 
 /* Transition animations */
 .transition-all {

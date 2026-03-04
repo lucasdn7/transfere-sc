@@ -52,12 +52,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Shield className="h-12 w-12 mx-auto text-blue-600 mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">Transfer Radar SC</h1>
-          <p className="text-gray-600">Área Técnica Restrita</p>
+          <h1 className="page-title">Transfer Radar SC</h1>
+          <p className="page-description">Área Técnica Restrita</p>
         </div>
 
         <Tabs defaultValue="signin" className="w-full">
@@ -67,10 +67,10 @@ export default function Auth() {
           </TabsList>
 
           <TabsContent value="signin">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <LogIn className="h-5 w-5 mr-2" />
+            <Card className="bg-white border-gray-200 shadow-sm">
+              <CardHeader className="bg-white border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-900">
+                  <LogIn className="h-5 w-5 mr-2 text-gray-600" />
                   Fazer Login
                 </CardTitle>
                 <CardDescription>
@@ -108,17 +108,17 @@ export default function Auth() {
           </TabsContent>
 
           <TabsContent value="signup">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <UserPlus className="h-5 w-5 mr-2" />
+            <Card className="bg-white border-gray-200 shadow-sm">
+              <CardHeader className="bg-white border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-900">
+                  <UserPlus className="h-5 w-5 mr-2 text-gray-600" />
                   Criar Conta
                 </CardTitle>
                 <CardDescription>
                   Cadastre-se para solicitar acesso à área técnica
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-white">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Nome Completo</Label>

@@ -274,32 +274,33 @@ export default function Processes() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Processos</h1>
-          <p className="text-gray-600">
-            Gerenciar processos de transferência ({total} encontrados)
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportToCSV}>
-            <Download className="h-4 w-4 mr-2" />
-            Exportar CSV
-          </Button>
-          {isAuthenticated && (
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Processo
+    <div className="page-section">
+      <div className="page-header">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="page-title">Processos</h1>
+            <p className="page-description">
+              Gerenciar processos de transferência ({total} encontrados)
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={exportToCSV}>
+              <Download className="h-4 w-4 mr-2" />
+              Exportar CSV
             </Button>
-          )}
+            {isAuthenticated && (
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Processo
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Filtros */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="filters-section">
+        <div className="filters-grid">
             <div className="relative">
               <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
               <Input
@@ -341,26 +342,25 @@ export default function Processes() {
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </Card>
+      </div>
 
       {/* Ações em lote */}
       {showBatchActions && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-4">
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardContent className="p-4 bg-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-blue-800">
                   {selectedProcesses.size} processo(s) selecionado(s)
                 </span>
-                <Button variant="outline" size="sm" onClick={() => setSelectedProcesses(new Set())}>
+                <Button variant="outline" size="sm" onClick={() => setSelectedProcesses(new Set())} className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   Limpar seleção
                 </Button>
               </div>
               <div className="flex gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       Atualizar Status
                     </Button>
                   </DropdownMenuTrigger>
@@ -417,8 +417,8 @@ export default function Processes() {
       {viewMode === 'cards' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedProcesses.map((process) => (
-            <Card key={process.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
+            <Card key={process.id} className="hover:shadow-lg transition-shadow bg-white border-gray-200 shadow-sm">
+              <CardHeader className="bg-white border-b border-gray-100">
                 <div className="flex justify-between items-start">
                   <div className="flex items-start gap-2">
                     <Checkbox 
@@ -426,7 +426,7 @@ export default function Processes() {
                       onCheckedChange={() => toggleProcessSelection(process.id)}
                     />
                     <div>
-                      <h3 className="font-semibold text-lg">{process.process_number}</h3>
+                      <h3 className="font-semibold text-lg text-gray-900">{process.process_number}</h3>
                       <Badge className={getVigenciaStatus(process.vigencia_date).color}>
                         {getVigenciaStatus(process.vigencia_date).label}
                       </Badge>
@@ -434,7 +434,7 @@ export default function Processes() {
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -497,23 +497,22 @@ export default function Processes() {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse bg-white border-gray-200">
             <thead>
               <tr>
-                <th className="border px-4 py-2 bg-gray-100">
+                <th className="border px-4 py-2 bg-gray-50">
                   <Checkbox 
                     checked={selectedProcesses.size === paginatedProcesses.length && paginatedProcesses.length > 0}
                     onCheckedChange={toggleSelectAll}
                   />
                 </th>
-                {columnConfig.process_number && <th className="border px-4 py-2 bg-gray-100">Número</th>}
-                {columnConfig.object && <th className="border px-4 py-2 bg-gray-100">Objeto</th>}
-                {columnConfig.municipality && <th className="border px-4 py-2 bg-gray-100">Município</th>}
-                {columnConfig.nucleus && <th className="border px-4 py-2 bg-gray-100">Núcleo</th>}
-                {columnConfig.status && <th className="border px-4 py-2 bg-gray-100">Status</th>}
-                {columnConfig.value && <th className="border px-4 py-2 bg-gray-100">Valor</th>}
-                {columnConfig.date && <th className="border px-4 py-2 bg-gray-100">Vigência</th>}
-                {columnConfig.actions && <th className="border px-4 py-2 bg-gray-100">Ações</th>}
+                {columnConfig.process_number && <th className="border px-4 py-2 bg-gray-50">Número</th>}
+                {columnConfig.object && <th className="border px-4 py-2 bg-gray-50">Objeto</th>}
+                {columnConfig.municipality && <th className="border px-4 py-2 bg-gray-50">Município</th>}
+                {columnConfig.status && <th className="border px-4 py-2 bg-gray-50">Status</th>}
+                {columnConfig.value && <th className="border px-4 py-2 bg-gray-50">Valor</th>}
+                {columnConfig.date && <th className="border px-4 py-2 bg-gray-50">Vigência</th>}
+                {columnConfig.actions && <th className="border px-4 py-2 bg-gray-50">Ações</th>}
               </tr>
             </thead>
             <tbody>
@@ -528,7 +527,7 @@ export default function Processes() {
                   {columnConfig.process_number && <td className="border px-4 py-2">{process.process_number}</td>}
                   {columnConfig.object && <td className="border px-4 py-2">{process.object}</td>}
                   {columnConfig.municipality && <td className="border px-4 py-2">{process.municipalities?.name || ''}</td>}
-                  {columnConfig.nucleus && <td className="border px-4 py-2">{process.regional_nuclei?.name || ''}</td>}
+                  {columnConfig.municipality && <td className="border px-4 py-2">{process.regional_nuclei?.name || ''}</td>}
                   {columnConfig.status && <td className="border px-4 py-2">{process.status_processos?.nome || ''}</td>}
                   {columnConfig.value && <td className="border px-4 py-2">{formatCurrency(process.total_portaria_value)}</td>}
                   {columnConfig.date && <td className="border px-4 py-2">{process.vigencia_date || ''}</td>}

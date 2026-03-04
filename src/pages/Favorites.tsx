@@ -53,7 +53,7 @@ export default function Favorites() {
 
   if (isLoadingFavorites) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-6 bg-white min-h-screen">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -65,12 +65,10 @@ export default function Favorites() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Favoritos
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+    <div className="page-section">
+      <div className="page-header">
+        <h1 className="page-title">Favoritos</h1>
+        <p className="page-description">
           Processos marcados como favoritos para acompanhamento técnico
         </p>
       </div>

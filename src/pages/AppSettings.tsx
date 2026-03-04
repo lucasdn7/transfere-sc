@@ -240,7 +240,7 @@ export default function AppSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen p-6">
       {showOnboarding && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative animate-fade-in">
@@ -270,17 +270,17 @@ export default function AppSettings() {
       )}
       <div className="grid gap-6">
         {/* Configurações de Layout */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Layout className="h-5 w-5 mr-2" />
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center text-gray-900">
+              <Layout className="h-5 w-5 mr-2 text-gray-600" />
               Layout e Navegação
             </CardTitle>
             <CardDescription>
               Configure a aparência e posicionamento do menu de navegação
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 bg-white">
             <div className="space-y-2">
               <LabelWithTooltip htmlFor="layout-position" tooltip="Selecione a posição do menu.">Posição do Menu</LabelWithTooltip>
               <Select value={layoutPosition} onValueChange={setLayoutPosition}>
@@ -379,17 +379,17 @@ export default function AppSettings() {
           </CardContent>
         </Card>
         {/* Configurações de Tipografia */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Type className="h-5 w-5 mr-2" />
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center text-gray-900">
+              <Type className="h-5 w-5 mr-2 text-gray-600" />
               Tipografia
             </CardTitle>
             <CardDescription>
               Ajuste o tamanho da fonte para melhor legibilidade
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 bg-white">
             <div className="space-y-2">
               <LabelWithTooltip htmlFor="font-size" tooltip="Ajuste o tamanho da fonte para melhor legibilidade.">Tamanho da Fonte</LabelWithTooltip>
               <Select value={fontSize} onValueChange={setFontSize}>
@@ -408,17 +408,17 @@ export default function AppSettings() {
         {/* Configurações de Acessibilidade */}
         {/* Painel Técnico */}
         {isAuthenticated && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Monitor className="h-5 w-5 mr-2" />
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center text-gray-900">
+                <Monitor className="h-5 w-5 mr-2 text-gray-600" />
                 Área Técnica
               </CardTitle>
               <CardDescription>
                 Configurações e ações para usuários técnicos
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 bg-white">
               <div className="flex items-center justify-between">
                 <LabelWithTooltip htmlFor="tech-notifications" tooltip="Ativa ou desativa notificações técnicas.">Notificações Técnicas</LabelWithTooltip>
                 <Switch
@@ -488,14 +488,14 @@ export default function AppSettings() {
           </Card>
         )}
         {/* Informações do Sistema */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Sobre o Sistema</CardTitle>
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="text-gray-900">Sobre o Sistema</CardTitle>
             <CardDescription>
               Informações sobre o Transfer Radar SC
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 bg-white">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <LabelWithTooltip htmlFor="version" tooltip="Versão atual do sistema.">Versão:</LabelWithTooltip>

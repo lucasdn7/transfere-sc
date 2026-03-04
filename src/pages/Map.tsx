@@ -82,10 +82,10 @@ export default function Map() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Mapa Interativo</h1>
-        <p className="text-muted-foreground">
+    <div className="page-section">
+      <div className="page-header">
+        <h1 className="page-title">Mapa Interativo</h1>
+        <p className="page-description">
           Visualize as transferências financeiras geograficamente
         </p>
       </div>
@@ -93,14 +93,14 @@ export default function Map() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Filtros e Configurações */}
         <div className="lg:col-span-1 space-y-4">
-          <Card>
-            <CardHeader>
+          <div className="filters-section">
+            <div className="card-header">
               <CardTitle className="flex items-center gap-2">
                 <Filter className="h-4 w-4" />
                 Filtros
               </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            </div>
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="search">Buscar Município</Label>
                 <div className="relative">
@@ -208,17 +208,17 @@ export default function Map() {
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center gap-2 text-gray-900">
+                <Settings className="h-4 w-4 text-gray-600" />
                 Configurações do Mapa
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 bg-white">
               <div className="space-y-2">
                 <Label>Estilo do Mapa</Label>
                 <Select value={mapStyle} onValueChange={setMapStyle}>
@@ -287,14 +287,14 @@ export default function Map() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center gap-2 text-gray-900">
+                <MapPin className="h-4 w-4 text-gray-600" />
                 Legenda - Status por Cor
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 bg-white">
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-sm"></div>
                 <span className="text-sm">Concluídas</span>
@@ -317,14 +317,14 @@ export default function Map() {
 
         {/* Área do Mapa */}
         <div className="lg:col-span-3">
-          <Card className="h-[800px]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
+          <Card className="h-[800px] bg-white border-gray-200 shadow-sm">
+            <CardHeader className="bg-white border-b border-gray-100">
+              <CardTitle className="flex items-center gap-2 text-gray-900">
+                <MapPin className="h-5 w-5 text-gray-600" />
                 Mapa de Santa Catarina
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-4">
+            <CardContent className="h-full p-4 bg-white">
               <InteractiveMap
                 token={token}
                 mapStyle={mapStyle}

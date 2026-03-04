@@ -291,7 +291,7 @@ export default function Reports() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen p-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -304,9 +304,9 @@ export default function Reports() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-        <p className="text-muted-foreground">
+      <div className="page-header">
+        <h1 className="page-title">Relatórios</h1>
+        <p className="page-description">
           Gere relatórios personalizados sobre transferências e investimentos
         </p>
         <p className="text-xs text-muted-foreground mt-1">
@@ -360,14 +360,14 @@ export default function Reports() {
       </div>
 
       {/* Filtros */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
+      <Card className="bg-white border-gray-200 shadow-sm">
+        <CardHeader className="bg-white border-b border-gray-100">
+          <CardTitle className="flex items-center gap-2 text-gray-900">
+            <BarChart3 className="h-5 w-5 text-gray-600" />
             Filtros de Relatório
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 bg-white">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Período (De)</label>
@@ -481,51 +481,43 @@ export default function Reports() {
       </Card>
 
       {/* Estatísticas Rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <FileText className="h-8 w-8 text-blue-600" />
-              <div>
-                <p className="text-2xl font-bold">24</p>
-                <p className="text-xs text-muted-foreground">Relatórios Gerados</p>
-              </div>
+      <div className="metrics-grid">
+        <div className="metric-card">
+          <div className="flex items-center gap-3">
+            <FileText className="h-8 w-8 text-blue-600" />
+            <div>
+              <div className="metric-value text-blue-600">24</div>
+              <div className="metric-label">Relatórios Gerados</div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="h-8 w-8 text-green-600" />
-              <div>
-                <p className="text-2xl font-bold">R$ 67M</p>
-                <p className="text-xs text-muted-foreground">Valor Total Analisado</p>
-              </div>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="h-8 w-8 text-green-600" />
+            <div>
+              <div className="metric-value text-green-600">R$ 67M</div>
+              <div className="metric-label">Valor Total Analisado</div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Users className="h-8 w-8 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold">60</p>
-                <p className="text-xs text-muted-foreground">Municípios Ativos</p>
-              </div>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="flex items-center gap-3">
+            <Users className="h-8 w-8 text-purple-600" />
+            <div>
+              <div className="metric-value text-purple-600">60</div>
+              <div className="metric-label">Municípios Ativos</div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <MapPin className="h-8 w-8 text-orange-600" />
-              <div>
-                <p className="text-2xl font-bold">21</p>
-                <p className="text-xs text-muted-foreground">Núcleos Regionais</p>
-              </div>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="flex items-center gap-3">
+            <MapPin className="h-8 w-8 text-orange-600" />
+            <div>
+              <div className="metric-value text-orange-600">21</div>
+              <div className="metric-label">Núcleos Regionais</div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Lista de Relatórios */}
@@ -552,19 +544,19 @@ export default function Reports() {
       )}
 
       {/* Ações Rápidas */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>Ações Rápidas</CardTitle>
+      <Card className="mt-8 bg-white border-gray-200 shadow-sm">
+        <CardHeader className="bg-white border-b border-gray-100">
+          <CardTitle className="text-gray-900">Ações Rápidas</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="bg-white">
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => handleDownload('Relatório Completo', 'PDF')}>
+            <Button onClick={() => handleDownload('Relatório Completo', 'PDF')} className="border-gray-300 text-gray-700 hover:bg-gray-50">
               Relatório Completo (PDF)
             </Button>
-            <Button variant="outline" onClick={() => handleDownload('Dados Exportação', 'XLSX')}>
+            <Button variant="outline" onClick={() => handleDownload('Dados Exportação', 'XLSX')} className="border-gray-300 text-gray-700 hover:bg-gray-50">
               Exportar Dados (XLSX)
             </Button>
-            <Button variant="outline" onClick={() => handleDownload('Resumo Executivo', 'CSV')}>
+            <Button variant="outline" onClick={() => handleDownload('Resumo Executivo', 'CSV')} className="border-gray-300 text-gray-700 hover:bg-gray-50">
               Resumo Executivo (CSV)
             </Button>
           </div>

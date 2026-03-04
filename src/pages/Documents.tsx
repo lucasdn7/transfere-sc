@@ -105,7 +105,7 @@ export default function Documents() {
   return (
     <React.Suspense fallback={<div>Carregando...</div>}>
       <ErrorBoundary fallback={ErrorFallback}>
-        <div className="space-y-6">
+        <div className="space-y-6 bg-white min-h-screen p-6">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -118,46 +118,49 @@ export default function Documents() {
             </BreadcrumbList>
           </Breadcrumb>
 
-          <div className="flex justify-between items-center mb-2">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Documentação</h1>
-              <p className="text-muted-foreground">
-                Central de documentos e recursos do sistema
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Última atualização: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-              </p>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Button variant={viewMode === 'list' ? 'default' : 'outline'} onClick={() => setViewMode('list')}><List className="h-4 w-4 mr-1" /> Lista</Button>
-              <Button variant={viewMode === 'cards' ? 'default' : 'outline'} onClick={() => setViewMode('cards')}><LayoutGrid className="h-4 w-4 mr-1" /> Cards</Button>
-              {isAuthenticated && (
-                <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Upload Documento
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Upload de Documento</DialogTitle>
-                    </DialogHeader>
-                    <DocumentUploadForm 
-                      onSuccess={() => {
-                        setIsUploadOpen(false);
-                        refetch();
-                      }}
-                      onCancel={() => setIsUploadOpen(false)}
-                    />
-                  </DialogContent>
-                </Dialog>
-              )}
+          <div className="page-header">
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="page-title">Documentação</h1>
+                <p className="page-description">
+                  Central de documentos e recursos do sistema
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Última atualização: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+                </p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Button variant={viewMode === 'list' ? 'default' : 'outline'} onClick={() => setViewMode('list')}><List className="h-4 w-4 mr-1" /> Lista</Button>
+                <Button variant={viewMode === 'cards' ? 'default' : 'outline'} onClick={() => setViewMode('cards')}><LayoutGrid className="h-4 w-4 mr-1" /> Cards</Button>
+                {isAuthenticated && (
+                  <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Upload Documento
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Upload de Documento</DialogTitle>
+                      </DialogHeader>
+                      <DocumentUploadForm 
+                        onSuccess={() => {
+                          setIsUploadOpen(false);
+                          refetch();
+                        }}
+                        onCancel={() => setIsUploadOpen(false)}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Barra de busca textual */}
-          <div className="flex gap-4 mb-2">
+          <div className="filters-section">
+            <div className="flex gap-4">
             <div className="relative flex-1">
               <input
                 type="text"
@@ -171,6 +174,7 @@ export default function Documents() {
               </span>
             </div>
           </div>
+        </div>
 
           {/* Abas de categoria */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
@@ -185,15 +189,15 @@ export default function Documents() {
           {/* Listagem de documentos */}
           {viewMode === 'list' ? (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse bg-white border-gray-200">
                 <thead>
                   <tr>
-                    <th className="border px-2 py-1 bg-gray-100">Nome</th>
-                    <th className="border px-2 py-1 bg-gray-100">Categoria</th>
-                    <th className="border px-2 py-1 bg-gray-100">Descrição</th>
-                    <th className="border px-2 py-1 bg-gray-100">Inserido em</th>
-                    <th className="border px-2 py-1 bg-gray-100">Tipo</th>
-                    <th className="border px-2 py-1 bg-gray-100">Ações</th>
+                    <th className="border px-2 py-1 bg-gray-50">Nome</th>
+                    <th className="border px-2 py-1 bg-gray-50">Categoria</th>
+                    <th className="border px-2 py-1 bg-gray-50">Descrição</th>
+                    <th className="border px-2 py-1 bg-gray-50">Inserido em</th>
+                    <th className="border px-2 py-1 bg-gray-50">Tipo</th>
+                    <th className="border px-2 py-1 bg-gray-50">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -204,7 +208,7 @@ export default function Documents() {
                           {document.title}
                           {!document.is_public && <span title="Restrito" className="ml-1 text-blue-400"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 9.27l-5 3.64L16.18 21 12 17.27 7.82 21 9 12.91l-5-3.64 5.91-.01z"/></svg></span>}
                         </td>
-                        <td className="border px-2 py-1">{document.document_categories?.name || document.category_name || 'Sem categoria'}</td>
+                        <td className="border px-2 py-1">{document.document_categories?.name || document.document_categories?.name || 'Sem categoria'}</td>
                         <td className="border px-2 py-1">{document.description}</td>
                         <td className="border px-2 py-1">{document.created_at ? new Date(document.created_at).toLocaleDateString('pt-BR') : '-'}</td>
                         <td className="border px-2 py-1"><FileTypeTag fileName={document.file_name} /></td>

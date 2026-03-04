@@ -24,7 +24,7 @@ export default function TechnicalAuth() {
 
   if (isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
         <div className="w-full max-w-md text-center">
           <Shield className="h-12 w-12 mx-auto text-blue-600 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Você já está autenticado!</h1>
@@ -47,7 +47,7 @@ export default function TechnicalAuth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Shield className="h-12 w-12 mx-auto text-blue-600 mb-4" />

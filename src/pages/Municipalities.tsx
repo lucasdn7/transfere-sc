@@ -209,7 +209,7 @@ export default function Municipalities() {
     
     if (rate >= 0.8) return { color: 'bg-green-500', label: 'Excelente' };
     if (rate >= 0.6) return { color: 'bg-yellow-500', label: 'Bom' };
-    return { color: 'bg-red-500', label: 'Atenção' };
+    return { color: 'bg-white border border-gray-2000', label: 'Atenção' };
   };
 
   if (isLoading) {
@@ -238,14 +238,12 @@ export default function Municipalities() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Municípios</h1>
-          <p className="text-gray-600">
-            Gerenciar municípios de Santa Catarina ({total} encontrados)
-          </p>
-        </div>
+    <div className="page-section">
+      <div className="page-header">
+        <h1 className="page-title">Municípios</h1>
+        <p className="page-description">
+          Gerenciar municípios de Santa Catarina ({total} encontrados)
+        </p>
         {isAuthenticated && (
           <Button>
             <Plus className="h-4 w-4 mr-2" />
@@ -255,48 +253,46 @@ export default function Municipalities() {
       </div>
 
       {/* Filtros */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex gap-4">
-            <div className="relative flex-1">
-              <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
-              <Input
-                placeholder="Buscar município..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button 
-              variant={showOnlyProblems ? "default" : "outline"}
-              onClick={() => setShowOnlyProblems(!showOnlyProblems)}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Apenas com Problemas
-            </Button>
+      <div className="filters-section">
+        <div className="flex gap-4">
+          <div className="relative flex-1">
+            <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
+            <Input
+              placeholder="Buscar município..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <Button 
+            variant={showOnlyProblems ? "default" : "outline"}
+            onClick={() => setShowOnlyProblems(!showOnlyProblems)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Apenas com Problemas
+          </Button>
+        </div>
+      </div>
 
       {/* Ações em lote */}
       {selectedMunicipalities.size > 0 && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-4">
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardContent className="p-4 bg-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-blue-800">
                   {selectedMunicipalities.size} município(s) selecionado(s)
                 </span>
-                <Button variant="outline" size="sm" onClick={() => setSelectedMunicipalities(new Set())}>
+                <Button variant="outline" size="sm" onClick={() => setSelectedMunicipalities(new Set())} className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   Limpar seleção
                 </Button>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={startComparison}>
+                <Button variant="outline" size="sm" onClick={startComparison} className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   <Filter className="h-4 w-4 mr-2" />
                   Comparar Selecionados
                 </Button>
-                <Button variant="outline" size="sm" onClick={exportComparisonData}>
+                <Button variant="outline" size="sm" onClick={exportComparisonData} className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   <Download className="h-4 w-4 mr-2" />
                   Exportar
                 </Button>
@@ -336,8 +332,8 @@ export default function Municipalities() {
             const hasIssues = hasProblems(municipality, stats);
             
             return (
-              <Card key={municipality.id} className={`hover:shadow-lg transition-shadow ${hasIssues ? 'border-red-200 bg-red-50' : ''}`}>
-                <CardHeader>
+              <Card key={municipality.id} className={`hover:shadow-lg transition-shadow ${hasIssues ? 'border-red-200 bg-white border border-gray-200' : 'bg-white border-gray-200 shadow-sm'}`}>
+                <CardHeader className="bg-white border-b border-gray-100">
                   <div className="flex justify-between items-start">
                     <div className="flex items-start gap-2">
                       <Checkbox 
@@ -345,7 +341,7 @@ export default function Municipalities() {
                         onCheckedChange={() => toggleMunicipalitySelection(municipality.id)}
                       />
                       <div>
-                        <h3 className="font-semibold text-lg">{municipality.name}</h3>
+                        <h3 className="font-semibold text-lg text-gray-900">{municipality.name}</h3>
                         <Badge className={regularity.color}>
                           {regularity.label}
                         </Badge>
@@ -358,7 +354,7 @@ export default function Municipalities() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="bg-white">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Processos</span>
@@ -394,23 +390,23 @@ export default function Municipalities() {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse bg-white border-gray-200">
             <thead>
               <tr>
-                <th className="border px-4 py-2 bg-gray-100">
+                <th className="border px-4 py-2 bg-gray-50">
                   <Checkbox 
                     checked={selectedMunicipalities.size === paginatedMunicipalities.length && paginatedMunicipalities.length > 0}
                     onCheckedChange={toggleSelectAll}
                   />
                 </th>
-                <th className="border px-4 py-2 bg-gray-100">Nome</th>
-                <th className="border px-4 py-2 bg-gray-100">Prefeito</th>
-                <th className="border px-4 py-2 bg-gray-100">Núcleo</th>
-                <th className="border px-4 py-2 bg-gray-100">Processos</th>
-                <th className="border px-4 py-2 bg-gray-100">Valor Total</th>
-                <th className="border px-4 py-2 bg-gray-100">Taxa Finalização</th>
-                <th className="border px-4 py-2 bg-gray-100">Status</th>
-                <th className="border px-4 py-2 bg-gray-100">Ações</th>
+                <th className="border px-4 py-2 bg-gray-50">Nome</th>
+                <th className="border px-4 py-2 bg-gray-50">Prefeito</th>
+                <th className="border px-4 py-2 bg-gray-50">Núcleo</th>
+                <th className="border px-4 py-2 bg-gray-50">Processos</th>
+                <th className="border px-4 py-2 bg-gray-50">Valor Total</th>
+                <th className="border px-4 py-2 bg-gray-50">Taxa Finalização</th>
+                <th className="border px-4 py-2 bg-gray-50">Status</th>
+                <th className="border px-4 py-2 bg-gray-50">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -419,7 +415,7 @@ export default function Municipalities() {
                 const hasIssues = hasProblems(m, stats);
                 
                 return (
-                  <tr key={m.id} className={hasIssues ? 'bg-red-50' : ''}>
+                  <tr key={m.id} className={hasIssues ? 'bg-white border border-gray-200' : ''}>
                     <td className="border px-4 py-2">
                       <Checkbox 
                         checked={selectedMunicipalities.has(m.id)}
@@ -477,35 +473,29 @@ export default function Municipalities() {
             <DialogTitle>Comparação de Municípios</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-blue-600">{comparisonData.length}</div>
-                  <div className="text-sm text-gray-600">Municípios Selecionados</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-green-600">
-                    {comparisonData.reduce((sum, m) => (municipalityStats?.[m.id]?.totalProcesses || 0), 0)}
-                  </div>
-                  <div className="text-sm text-gray-600">Total de Processos</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {(
-                      (comparisonData.reduce((sum, m) => {
-                        const stats = municipalityStats?.[m.id];
-                        const finalizados = stats?.statuses['Finalizado'] || 0;
-                        return sum + (stats?.totalProcesses > 0 ? (finalizados / stats.totalProcesses) : 0);
-                      }, 0) / comparisonData.length * 100)
-                    ).toFixed(1)}%
-                  </div>
-                  <div className="text-sm text-gray-600">Taxa Média Finalização</div>
-                </CardContent>
-              </Card>
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <div className="metric-value text-blue-600">{comparisonData.length}</div>
+                <div className="metric-label">Municípios Selecionados</div>
+              </div>
+              <div className="metric-card">
+                <div className="metric-value text-green-600">
+                  {comparisonData.reduce((sum, m) => (municipalityStats?.[m.id]?.totalProcesses || 0), 0)}
+                </div>
+                <div className="metric-label">Total de Processos</div>
+              </div>
+              <div className="metric-card">
+                <div className="metric-value text-purple-600">
+                  {(
+                    (comparisonData.reduce((sum, m) => {
+                      const stats = municipalityStats?.[m.id];
+                      const finalizados = stats?.statuses['Finalizado'] || 0;
+                      return sum + (stats?.totalProcesses > 0 ? (finalizados / stats.totalProcesses) : 0);
+                    }, 0) / comparisonData.length * 100)
+                  ).toFixed(1)}%
+                </div>
+                <div className="metric-label">Taxa Média Finalização</div>
+              </div>
             </div>
             
             <div className="overflow-x-auto">

@@ -40,7 +40,7 @@ export function Header({ onMenuToggle, isMobileMenuOpen }: HeaderProps) {
           )}
           
           <Link to="/" className="flex items-center space-x-2">
-            <Shield className="h-8 w-8 text-blue-600" />
+            <Shield className="h-8 w-8 text-gray-500" />
             <div>
               <h1 className="text-xl font-bold text-gray-900">Transfer Radar SC</h1>
               <p className="text-xs text-gray-600">Sistema de Transferências Financeiras</p>
@@ -54,7 +54,7 @@ export function Header({ onMenuToggle, isMobileMenuOpen }: HeaderProps) {
               <NotificationCenter />
               <div className="flex items-center space-x-2">
                 <User className="h-4 w-4 text-gray-600" />
-                <Badge className="bg-blue-100 text-blue-800">
+                <Badge className="bg-gray-100 text-gray-700 border border-gray-300">
                   Área Técnica
                 </Badge>
               </div>
@@ -66,7 +66,7 @@ export function Header({ onMenuToggle, isMobileMenuOpen }: HeaderProps) {
             variant={isAuthenticated ? "outline" : "default"}
             size="sm"
             onClick={handleAuthAction}
-            className="flex items-center space-x-2"
+            className={`flex items-center space-x-2 ${!isAuthenticated ? "bg-gray-100 hover:bg-gray-200 text-gray-900 border-gray-300" : "border-gray-300 text-gray-700 hover:bg-gray-50"}`}
           >
             {isAuthenticated ? (
               <>

@@ -299,7 +299,7 @@ export default function ProcessTimeline() {
   const groupedProcesses = groupProcesses(processes);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen p-6">
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -421,16 +421,16 @@ export default function ProcessTimeline() {
                 );
                 
                 return (
-                  <Card key={process.id} className="relative ml-6 hover:shadow-lg transition-shadow">
+                  <Card key={process.id} className="relative ml-6 hover:shadow-lg transition-shadow bg-white border-gray-200 shadow-sm">
                     {/* Ícone da timeline */}
                     <div className={`absolute -left-8 top-6 w-4 h-4 rounded-full ${timelineStatus.color} border-2 border-white shadow-sm flex items-center justify-center`}>
                       <timelineStatus.icon className="h-2 w-2 text-white" />
                     </div>
                     
-                    <CardHeader className="pb-3">
+                    <CardHeader className="pb-3 bg-white border-b border-gray-100">
                       <div className="flex justify-between items-start">
                         <div className="space-y-2">
-                          <CardTitle className="text-lg flex items-center gap-2">
+                          <CardTitle className="text-lg flex items-center gap-2 text-gray-900">
                             <statusIcon.icon className={`h-5 w-5 ${statusIcon.color}`} />
                             {process.process_number}
                           </CardTitle>

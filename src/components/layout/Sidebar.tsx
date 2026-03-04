@@ -36,10 +36,10 @@ export function Sidebar() {
   const { userRole } = useAuth();
 
   return (
-    <div className="flex h-full flex-col border-r bg-muted/10">
-      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <MapPin className="h-6 w-6" />
+    <div className="flex h-full flex-col border-r bg-blue-50">
+      <div className="flex h-14 items-center border-b bg-blue-100 px-4 lg:h-[60px] lg:px-6">
+        <Link to="/" className="flex items-center gap-2 font-semibold text-blue-900">
+          <MapPin className="h-6 w-6 text-blue-600" />
           <span>GEINFRA</span>
         </Link>
       </div>
@@ -49,7 +49,7 @@ export function Sidebar() {
             <Button
               key={item.name}
               variant={location.pathname === item.href ? "secondary" : "ghost"}
-              className="justify-start"
+              className={`justify-start ${location.pathname === item.href ? "bg-blue-200 text-blue-900 hover:bg-blue-300" : "text-blue-700 hover:bg-blue-100"}`}
               asChild
             >
               <Link to={item.href}>
@@ -63,7 +63,7 @@ export function Sidebar() {
           {userRole === "technical" && (
             <Button
               variant={location.pathname === "/favorites" ? "secondary" : "ghost"}
-              className="justify-start"
+              className={`justify-start ${location.pathname === "/favorites" ? "bg-blue-200 text-blue-900 hover:bg-blue-300" : "text-blue-700 hover:bg-blue-100"}`}
               asChild
             >
               <Link to="/favorites">
@@ -75,7 +75,11 @@ export function Sidebar() {
           
           <Separator className="my-4" />
           
-          <Button variant="ghost" className="justify-start" asChild>
+          <Button 
+            variant="ghost" 
+            className={`justify-start ${location.pathname === "/app-settings" ? "bg-blue-200 text-blue-900 hover:bg-blue-300" : "text-blue-700 hover:bg-blue-100"}`} 
+            asChild
+          >
             <Link to="/app-settings">
               <Settings className="mr-2 h-4 w-4" />
               Config. Aplicação

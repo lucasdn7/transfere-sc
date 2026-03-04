@@ -495,11 +495,13 @@ export default function Municipalities() {
               <Card>
                 <CardContent className="p-4">
                   <div className="text-2xl font-bold text-purple-600">
-                    {((comparisonData.reduce((sum, m) => {
-                      const stats = municipalityStats?.[m.id];
-                      const finalizados = stats?.statuses['Finalizado'] || 0;
-                      return sum + (stats?.totalProcesses > 0 ? (finalizados / stats.totalProcesses) : 0);
-                    }, 0) / comparisonData.length * 100).toFixed(1)}%
+                    {(
+                      (comparisonData.reduce((sum, m) => {
+                        const stats = municipalityStats?.[m.id];
+                        const finalizados = stats?.statuses['Finalizado'] || 0;
+                        return sum + (stats?.totalProcesses > 0 ? (finalizados / stats.totalProcesses) : 0);
+                      }, 0) / comparisonData.length * 100)
+                    ).toFixed(1)}%
                   </div>
                   <div className="text-sm text-gray-600">Taxa Média Finalização</div>
                 </CardContent>

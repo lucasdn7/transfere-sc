@@ -1,0 +1,117 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Alto Contraste */
+.high-contrast {
+  --color-bg: #000 !important;
+  --color-fg: #fff !important;
+  --color-primary: #ff0 !important;
+  --color-secondary: #0ff !important;
+  background: var(--color-bg) !important;
+  color: var(--color-fg) !important;
+}
+.high-contrast a, .high-contrast button, .high-contrast input, .high-contrast select, .high-contrast label {
+  color: var(--color-primary) !important;
+  background: #111 !important;
+  border-color: var(--color-secondary) !important;
+}
+
+/* Modo Daltônico (paleta amigável) */
+.color-blind {
+  --color-primary: #0072B2 !important;
+  --color-secondary: #E69F00 !important;
+  --color-success: #009E73 !important;
+  --color-danger: #D55E00 !important;
+  --color-warning: #F0E442 !important;
+  --color-bg: #fff !important;
+  --color-fg: #222 !important;
+}
+.color-blind a, .color-blind button, .color-blind input, .color-blind select, .color-blind label {
+  color: var(--color-primary) !important;
+  background: #f7f7f7 !important;
+  border-color: var(--color-secondary) !important;
+}
+
+/* Layout Compacto */
+.compact-layout * {
+  padding: 0.25rem !important;
+  margin: 0.25rem !important;
+  font-size: 0.95em !important;
+}
+.compact-layout .card, .compact-layout .Card, .compact-layout .CardContent {
+  padding: 0.5rem !important;
+}
+
+/* Reduzir Animações */
+.reduce-motion *, .reduce-motion *:before, .reduce-motion *:after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Paletas de cores customizadas (exemplo) */
+.theme-blue { --color-primary: #2563eb !important; }
+.theme-green { --color-primary: #10b981 !important; }
+.theme-orange { --color-primary: #f59e0b !important; }
+.theme-default { --color-primary: #2563eb !important; }
+
+/* Fontes customizadas */
+.font-sans { font-family: 'Inter', Arial, sans-serif !important; }
+.font-serif { font-family: 'Merriweather', serif !important; }
+.font-mono { font-family: 'Fira Mono', monospace !important; }
+
+/* Debug visual para técnicos */
+.debug-visual * {
+  outline: 1px dashed #f59e0b !important;
+}
+.debug-visual [data-component]::after {
+  content: attr(data-component);
+  color: #f59e0b;
+  font-size: 10px;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  background: #fff8e1;
+  padding: 0 2px;
+  border-radius: 2px;
+  z-index: 9999;
+}

@@ -9,9 +9,12 @@ const ProcessCalendar = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Calendário de Processos</h1>
+    <div className="page-section">
+      <div className="page-header">
+        <h1 className="page-title">Calendário de Processos</h1>
+        <p className="page-description">
+          Visualize eventos e prazos importantes dos processos
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

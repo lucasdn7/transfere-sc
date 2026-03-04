@@ -82,10 +82,12 @@ export default function Documents() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Documentação</h1>
-          <p className="text-muted-foreground">Carregando documentos...</p>
+      <div className="page-section">
+        <div className="page-header">
+          <h1 className="page-title">Documentação</h1>
+          <p className="page-description text-muted-foreground">
+            Carregando documentos...
+          </p>
         </div>
       </div>
     );
@@ -93,10 +95,12 @@ export default function Documents() {
 
   if (error) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Documentação</h1>
-          <p className="text-red-600">Erro ao carregar documentos: {error.message}</p>
+      <div className="page-section">
+        <div className="page-header">
+          <h1 className="page-title">Documentação</h1>
+          <p className="page-description text-red-600">
+            Erro ao carregar documentos: {error.message}
+          </p>
         </div>
       </div>
     );
@@ -105,7 +109,7 @@ export default function Documents() {
   return (
     <React.Suspense fallback={<div>Carregando...</div>}>
       <ErrorBoundary fallback={ErrorFallback}>
-        <div className="space-y-6 bg-white min-h-screen p-6">
+        <div className="page-section space-y-6">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>

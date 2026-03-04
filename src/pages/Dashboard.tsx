@@ -382,17 +382,19 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Carregando métricas...</p>
+      <div className="page-section">
+        <div className="page-header">
+          <h1 className="page-title">Dashboard</h1>
+          <p className="page-description text-muted-foreground">
+            Carregando métricas...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 bg-white min-h-screen p-6">
+    <div className="page-section space-y-6">
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>

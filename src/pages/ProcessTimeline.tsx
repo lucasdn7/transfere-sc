@@ -164,10 +164,12 @@ export default function ProcessTimeline() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Timeline de Processos</h1>
-          <p className="text-muted-foreground">Carregando timeline...</p>
+      <div className="page-section">
+        <div className="page-header">
+          <h1 className="page-title">Timeline de Processos</h1>
+          <p className="page-description text-muted-foreground">
+            Carregando timeline...
+          </p>
         </div>
       </div>
     );
@@ -175,10 +177,12 @@ export default function ProcessTimeline() {
 
   if (error) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Timeline de Processos</h1>
-          <p className="text-red-600">Erro ao carregar timeline: {error.message}</p>
+      <div className="page-section">
+        <div className="page-header">
+          <h1 className="page-title">Timeline de Processos</h1>
+          <p className="page-description text-red-600">
+            Erro ao carregar timeline: {error.message}
+          </p>
         </div>
       </div>
     );
@@ -299,7 +303,7 @@ export default function ProcessTimeline() {
   const groupedProcesses = groupProcesses(processes);
 
   return (
-    <div className="space-y-6 bg-white min-h-screen p-6">
+    <div className="page-section space-y-6">
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>

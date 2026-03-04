@@ -5,12 +5,15 @@ const NotFound = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
+        <h1 className="text-4xl font-bold mb-2">404</h1>
+        <p className="text-xl text-gray-700 mb-1">Página não encontrada</p>
+        <p className="text-sm text-gray-500 mb-4">
+          A rota <span className="font-mono break-all">{location.pathname}</span> não existe.
+        </p>
+        <a href="/" className="text-blue-600 hover:text-blue-800 underline text-sm font-medium">
+          Voltar para o início
         </a>
       </div>
     </div>

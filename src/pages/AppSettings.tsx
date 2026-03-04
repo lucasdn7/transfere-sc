@@ -240,7 +240,7 @@ export default function AppSettings() {
   }
 
   return (
-    <div className="space-y-6 bg-white min-h-screen p-6">
+    <div className="page-section space-y-6">
       {showOnboarding && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative animate-fade-in">

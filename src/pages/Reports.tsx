@@ -291,7 +291,7 @@ export default function Reports() {
   ];
 
   return (
-    <div className="space-y-6 bg-white min-h-screen p-6">
+    <div className="page-section space-y-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

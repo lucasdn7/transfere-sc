@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, TrendingUp, TrendingDown, Minus, Download, Calendar, Filter, DollarSign, Users, Building, Clock, AlertCircle, BarChart3, Settings } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FileText, TrendingUp, TrendingDown, Minus, Download, Calendar, Filter, DollarSign, Users, Building, Clock, AlertCircle, BarChart3, Settings, CalendarDays } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/utils/processUtils';
 import { toast } from 'sonner';
@@ -24,7 +25,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { format, subDays, startOfYear, endOfYear } from 'date-fns';
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs";
+import { format, subDays, startOfYear, endOfYear, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface DateRange {
@@ -42,7 +49,25 @@ interface ContratosMetrics {
     'Finalizado': number;
   };
   variacaoPercentual: number;
-  periodoAnterior: number;
+  periodoAnterior: string;
+}
+
+interface ParcelasMetrics {
+  valorTotalContratos: number;
+  valorTotalRepassado: number;
+  percentualRepassado: number;
+}
+
+interface EventsMetrics {
+  totalEventos: number;
+  valorTransferido: number;
+  municipiosBeneficiados: number;
+  nucleosAtendidos: number;
+}
+
+interface EventsChartData {
+  porTipo: Record<string, number>;
+  porAno: Record<string, number>;
 }
 
 export default function Dashboard() {
@@ -54,10 +79,12 @@ export default function Dashboard() {
   });
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [selectedNucleus, setSelectedNucleus] = useState<string>('all');
+  const [filterContratoAssinado, setFilterContratoAssinado] = useState<boolean>(false);
+  const [dashboardMode, setDashboardMode] = useState<'obras' | 'eventos'>('obras');
 
   // Buscar métricas de contratos firmados
   const { data: contratosMetrics, isLoading, refetch } = useQuery({
-    queryKey: ['contratos-firmados', dateRange, selectedRegion, selectedNucleus],
+    queryKey: ['contratos-firmados', dateRange, selectedRegion, selectedNucleus, filterContratoAssinado],
     queryFn: async (): Promise<ContratosMetrics> => {
       // Período anterior para comparação
       const daysDiff = Math.ceil((dateRange.endDate.getTime() - dateRange.startDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -89,7 +116,7 @@ export default function Dashboard() {
       if (selectedNucleus !== 'all') {
         query = query.eq('regional_nuclei.id', parseInt(selectedNucleus));
       }
-
+      
       const { data: currentData, count: currentCount, error: currentError } = await query;
 
       if (currentError) throw currentError;
@@ -118,10 +145,10 @@ export default function Dashboard() {
       if (selectedNucleus !== 'all') {
         queryAnterior = queryAnterior.eq('regional_nuclei.id', parseInt(selectedNucleus));
       }
+      
+      const { data: previousData, count: previousCount, error: previousError } = await queryAnterior;
 
-      const { count: anteriorCount, error: anteriorError } = await queryAnterior;
-
-      if (anteriorError) throw anteriorError;
+      if (previousError) throw previousError;
 
       // Agrupar por status
       const porStatus = {
@@ -140,15 +167,15 @@ export default function Dashboard() {
       });
 
       // Calcular variação percentual
-      const variacaoPercentual = anteriorCount && anteriorCount > 0 
-        ? ((currentCount - anteriorCount) / anteriorCount) * 100 
+      const variacaoPercentual = previousCount && previousCount > 0 
+        ? ((currentCount - previousCount) / previousCount) * 100 
         : 0;
 
       return {
         total: currentCount || 0,
         porStatus,
         variacaoPercentual,
-        periodoAnterior: anteriorCount || 0
+        periodoAnterior: previousCount?.toString() || '0'
       };
     },
     refetchInterval: 30000
@@ -156,7 +183,7 @@ export default function Dashboard() {
 
   // Buscar métricas financeiras
   const { data: financialMetrics } = useQuery({
-    queryKey: ['financial-metrics', dateRange, selectedRegion, selectedNucleus],
+    queryKey: ['financial-metrics', dateRange, selectedRegion, selectedNucleus, filterContratoAssinado],
     queryFn: async () => {
       let query = supabase
         .from('processes')
@@ -170,7 +197,7 @@ export default function Dashboard() {
       if (selectedNucleus !== 'all') {
         query = query.eq('regional_nuclei.id', parseInt(selectedNucleus));
       }
-
+      
       const { data, error } = await query;
       if (error) throw error;
 
@@ -254,6 +281,150 @@ export default function Dashboard() {
         proximosVencimento,
         totalProcessos: data?.length || 0
       };
+    },
+    refetchInterval: 30000
+  });
+
+  // Buscar métricas de parcelas (valores totais e repassados)
+  const { data: parcelasMetrics } = useQuery({
+    queryKey: ['parcelas-metrics', dateRange, selectedRegion, selectedNucleus, filterContratoAssinado],
+    queryFn: async (): Promise<ParcelasMetrics> => {
+      // Buscar valor total dos contratos (soma de total_concedente_value)
+      let queryContratos = supabase
+        .from('processes')
+        .select('total_concedente_value, regional_nuclei(name)')
+        .gte('created_at', dateRange.startDate.toISOString())
+        .lte('created_at', dateRange.endDate.toISOString());
+
+      if (selectedRegion !== 'all') {
+        queryContratos = queryContratos.eq('regional_nuclei.name', selectedRegion);
+      }
+      if (selectedNucleus !== 'all') {
+        queryContratos = queryContratos.eq('regional_nuclei.id', parseInt(selectedNucleus));
+      }
+      
+      const { data: contratosData, error: contratosError } = await queryContratos;
+      if (contratosError) throw contratosError;
+
+      const valorTotalContratos = contratosData?.reduce((sum, p) => sum + (p.total_concedente_value || 0), 0) || 0;
+
+      // Buscar valor total já repassado (soma das parcelas com payment_date não nulo)
+      let queryParcelas = supabase
+        .from('process_parcels')
+        .select('value, payment_date, processes!inner(regional_nuclei(name))')
+        .not('payment_date', 'is', null);
+
+      // Aplicar filtros de região/núcleo se selecionados
+      if (selectedRegion !== 'all') {
+        queryParcelas = queryParcelas.eq('processes.regional_nuclei.name', selectedRegion);
+      }
+      if (selectedNucleus !== 'all') {
+        queryParcelas = queryParcelas.eq('processes.regional_nuclei.id', parseInt(selectedNucleus));
+      }
+      
+      const { data: parcelasData, error: parcelasError } = await queryParcelas;
+      if (parcelasError) throw parcelasError;
+
+      const valorTotalRepassado = parcelasData?.reduce((sum, p) => sum + (p.value || 0), 0) || 0;
+
+      const percentualRepassado = valorTotalContratos > 0 
+        ? (valorTotalRepassado / valorTotalContratos) * 100 
+        : 0;
+
+      return {
+        valorTotalContratos,
+        valorTotalRepassado,
+        percentualRepassado
+      };
+    },
+    refetchInterval: 30000
+  });
+
+  // Buscar métricas de eventos
+  const { data: eventsMetrics } = useQuery({
+    queryKey: ['events-metrics', dateRange, selectedRegion, selectedNucleus],
+    queryFn: async (): Promise<EventsMetrics> => {
+      let query = supabase
+        .from('events')
+        .select(`
+          *,
+          municipalities!inner(
+            id,
+            name,
+            regional_nucleus_id,
+            regional_nuclei!inner(id, name)
+          )
+        `)
+        .gte('data_evento', dateRange.startDate.toISOString())
+        .lte('data_evento', dateRange.endDate.toISOString());
+
+      if (selectedRegion !== 'all') {
+        query = query.eq('municipalities.regional_nuclei.name', selectedRegion);
+      }
+      if (selectedNucleus !== 'all') {
+        query = query.eq('municipalities.regional_nucleus_id', parseInt(selectedNucleus));
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const totalEventos = data?.length || 0;
+      const valorTransferido = data?.reduce((sum, e) => sum + (e.valor_concedente || 0), 0) || 0;
+      const municipiosBeneficiados = [...new Set(data?.map(e => e.municipio_id))].length;
+      const nucleosAtendidos = [...new Set(data?.map(e => e.municipalities?.regional_nucleus_id))].length;
+
+      return {
+        totalEventos,
+        valorTransferido,
+        municipiosBeneficiados,
+        nucleosAtendidos
+      };
+    },
+    refetchInterval: 30000
+  });
+
+  // Buscar dados para gráficos de eventos
+  const { data: eventsChartData } = useQuery({
+    queryKey: ['events-chart-data', dateRange, selectedRegion, selectedNucleus],
+    queryFn: async (): Promise<EventsChartData> => {
+      let query = supabase
+        .from('events')
+        .select(`
+          *,
+          municipalities!inner(
+            id,
+            regional_nucleus_id,
+            regional_nuclei!inner(id, name)
+          )
+        `)
+        .gte('data_evento', dateRange.startDate.toISOString())
+        .lte('data_evento', dateRange.endDate.toISOString());
+
+      if (selectedRegion !== 'all') {
+        query = query.eq('municipalities.regional_nuclei.name', selectedRegion);
+      }
+      if (selectedNucleus !== 'all') {
+        query = query.eq('municipalities.regional_nucleus_id', parseInt(selectedNucleus));
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      // Agrupar por tipo de repasse (usando objeto como proxy)
+      const porTipo: Record<string, number> = {};
+      data?.forEach(event => {
+        const tipo = event.objeto || 'Outros';
+        porTipo[tipo] = (porTipo[tipo] || 0) + (event.valor_concedente || 0);
+      });
+
+      // Agrupar por ano
+      const porAno: Record<string, number> = {};
+      data?.forEach(event => {
+        const ano = parseISO(event.data_evento).getFullYear().toString();
+        porAno[ano] = (porAno[ano] || 0) + 1;
+      });
+
+      return { porTipo, porAno };
     },
     refetchInterval: 30000
   });
@@ -409,12 +580,24 @@ export default function Dashboard() {
       </Breadcrumb>
 
       <div className="page-header">
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-description">
-          Visão geral das transferências financeiras do Estado de SC para os municípios
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="page-title">Dashboard</h1>
+            <p className="page-description">
+              Visão geral das transferências financeiras do Estado de SC para os municípios
+            </p>
+          </div>
+        </div>
       </div>
 
+      {/* Tabs para alternar entre Obras e Eventos */}
+      <Tabs value={dashboardMode} onValueChange={(value) => setDashboardMode(value as 'obras' | 'eventos')} className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="obras">Obras</TabsTrigger>
+          <TabsTrigger value="eventos">Eventos</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="obras" className="space-y-6 mt-6">
       {/* Filtros */}
       <div className="filters-section">
         <div className="card-header">
@@ -484,6 +667,24 @@ export default function Dashboard() {
               </Select>
             </div>
 
+            {/* Filtro de Contrato Assinado */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Filtros Adicionais</label>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contrato-assinado"
+                  checked={filterContratoAssinado}
+                  onCheckedChange={(checked) => setFilterContratoAssinado(checked as boolean)}
+                />
+                <label 
+                  htmlFor="contrato-assinado" 
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Apenas Contratos Assinados
+                </label>
+              </div>
+            </div>
+
             {/* Período selecionado */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Período Selecionado</label>
@@ -494,70 +695,56 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Cards de Métricas */}
-      <div id="dashboard-cards" className="metrics-grid">
-        {/* Card Contratos Firmados */}
-        <div className="metric-card">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <FileText className="h-6 w-6 text-blue-600" />
-              <h3 className="font-semibold text-lg">Contratos Firmados</h3>
-            </div>
-            <div className="flex items-center gap-2">
-              {getVariationIcon()}
-              <span className={`metric-change ${getVariationColor()}`}>
-                {contratosMetrics?.variacaoPercentual > 0 ? '+' : ''}
-                {contratosMetrics?.variacaoPercentual.toFixed(1)}%
-              </span>
-            </div>
-          </div>
-          <div className="metric-value text-blue-600">
-            {contratosMetrics?.total.toLocaleString('pt-BR') || '0'}
-          </div>
-          <div className="metric-label">
-            vs {contratosMetrics?.periodoAnterior} no período anterior
-          </div>
-        </div>
-
-        {/* Card Valor Total */}
-        <div className="metric-card">
-          <div className="flex items-center gap-3 mb-4">
+      {/* Card Horizontal de Repasse Financeiro */}
+      <div className="metric-card">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
             <DollarSign className="h-6 w-6 text-green-600" />
-            <h3 className="font-semibold text-lg">Valor Total</h3>
+            <h3 className="font-semibold text-lg">Repasse Financeiro do Estado</h3>
           </div>
-          <div className="metric-value text-green-600">
-            {formatCurrency(financialMetrics?.totalPortaria || 0)}
-          </div>
-          <div className="metric-label">
-            Média por processo: {formatCurrency(financialMetrics?.mediaPorProcesso || 0)}
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <div className="text-sm text-gray-600">Total a Repassar</div>
+              <div className="text-xl font-bold text-gray-900">
+                {formatCurrency(parcelasMetrics?.valorTotalContratos || 0)}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-600">Total Repassado</div>
+              <div className="text-xl font-bold text-green-600">
+                {formatCurrency(parcelasMetrics?.valorTotalRepassado || 0)}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-600">Percentual</div>
+              <div className="text-xl font-bold text-blue-600">
+                {parcelasMetrics?.percentualRepassado.toFixed(1) || '0.0'}%
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Card Municípios Atendidos */}
-        <div className="metric-card">
-          <div className="flex items-center gap-3 mb-4">
-            <Building className="h-6 w-6 text-purple-600" />
-            <h3 className="font-semibold text-lg">Municípios Atendidos</h3>
+        
+        {/* Barra de Progresso */}
+        <div className="w-full">
+          <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Progresso do Repasse</span>
+            <span>{parcelasMetrics?.percentualRepassado.toFixed(1) || '0.0'}% concluído</span>
           </div>
-          <div className="metric-value text-purple-600">
-            {municipalityMetrics?.totalMunicipalities.toLocaleString('pt-BR') || '0'}
+          <div className="w-full bg-gray-200 rounded-full h-8 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500 ease-out flex items-center justify-center"
+              style={{ width: `${Math.min(parcelasMetrics?.percentualRepassado || 0, 100)}%` }}
+            >
+              {parcelasMetrics?.percentualRepassado > 5 && (
+                <span className="text-white text-sm font-medium">
+                  {parcelasMetrics.percentualRepassado.toFixed(1)}%
+                </span>
+              )}
+            </div>
           </div>
-          <div className="metric-label">
-            {municipalityMetrics?.totalProcessos || 0} processos no total
-          </div>
-        </div>
-
-        {/* Card Status Vigência */}
-        <div className="metric-card">
-          <div className="flex items-center gap-3 mb-4">
-            <Clock className="h-6 w-6 text-orange-600" />
-            <h3 className="font-semibold text-lg">Status Vigência</h3>
-          </div>
-          <div className="metric-value text-orange-600">
-            {timeMetrics?.proximosVencimento || '0'}
-          </div>
-          <div className="metric-label">
-            {timeMetrics?.vencidos || 0} vencidos • {timeMetrics?.proximosVencimento || 0} próximos ao vencimento
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>R$ 0</span>
+            <span>{formatCurrency(parcelasMetrics?.valorTotalContratos || 0)}</span>
           </div>
         </div>
       </div>
@@ -1033,6 +1220,289 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+        </TabsContent>
+
+        <TabsContent value="eventos" className="space-y-6 mt-6">
+      {/* Filtros */}
+      <div className="filters-section">
+        <div className="card-header">
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filtros
+          </CardTitle>
+        </div>
+        <div className="filters-grid">
+            {/* Período */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Período</label>
+              <Select value={selectedPeriod} onValueChange={(value) => {
+                const preset = datePresets.find(p => p.label === value);
+                if (preset) applyDatePreset(preset);
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o período" />
+                </SelectTrigger>
+                <SelectContent>
+                  {datePresets.map(preset => (
+                    <SelectItem key={preset.label} value={preset.label}>
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Região */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Região</label>
+              <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Todas as regiões" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as regiões</SelectItem>
+                  {regions?.map(region => (
+                    <SelectItem key={region} value={region}>
+                      {region}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Núcleo */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Núcleo Regional</label>
+              <Select 
+                value={selectedNucleus} 
+                onValueChange={setSelectedNucleus}
+                disabled={selectedRegion === 'all'}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todos os núcleos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os núcleos</SelectItem>
+                  {nuclei?.map(nucleus => (
+                    <SelectItem key={nucleus.id} value={nucleus.id.toString()}>
+                      {nucleus.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Período selecionado */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Período Selecionado</label>
+              <div className="p-2 border rounded-md bg-white border-gray-200 text-sm">
+                {format(dateRange.startDate, 'dd/MM/yyyy')} - {format(dateRange.endDate, 'dd/MM/yyyy')}
+              </div>
+            </div>
+        </div>
+      </div>
+
+      {/* Cards de Indicadores de Eventos */}
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        {/* Total de Eventos */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center gap-3 text-gray-900">
+              <CalendarDays className="h-6 w-6 text-blue-600" />
+              Total de Eventos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 bg-white">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600 mb-2">
+                {eventsMetrics?.totalEventos?.toLocaleString('pt-BR') || '0'}
+              </div>
+              <div className="text-sm text-gray-600">
+                Eventos registrados
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Valor Transferido */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center gap-3 text-gray-900">
+              <DollarSign className="h-6 w-6 text-green-600" />
+              Valor Transferido
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 bg-white">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">
+                {formatCurrency(eventsMetrics?.valorTransferido || 0)}
+              </div>
+              <div className="text-sm text-gray-600">
+                Total transferido
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Municípios Beneficiados */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center gap-3 text-gray-900">
+              <Building className="h-6 w-6 text-purple-600" />
+              Municípios Beneficiados
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 bg-white">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-purple-600 mb-2">
+                {eventsMetrics?.municipiosBeneficiados?.toLocaleString('pt-BR') || '0'}
+              </div>
+              <div className="text-sm text-gray-600">
+                Municípios atendidos
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Núcleos Regionais Atendidos */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center gap-3 text-gray-900">
+              <Users className="h-6 w-6 text-orange-600" />
+              Núcleos Atendidos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 bg-white">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-orange-600 mb-2">
+                {eventsMetrics?.nucleosAtendidos?.toLocaleString('pt-BR') || '0'}
+              </div>
+              <div className="text-sm text-gray-600">
+                Núcleos regionais
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Gráficos de Eventos */}
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        {/* Gráfico por Tipo de Repasse */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center gap-3 text-gray-900">
+              <BarChart3 className="h-6 w-6 text-gray-600" />
+              Distribuição por Tipo de Repasse
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 bg-white">
+            <div className="space-y-4">
+              {Object.entries(eventsChartData?.porTipo || {}).slice(0, 10).map(([tipo, valor]) => {
+                const maxValue = Math.max(...Object.values(eventsChartData?.porTipo || {}));
+                const percentage = maxValue > 0 ? (valor / maxValue * 100).toFixed(1) : '0';
+                
+                return (
+                  <div key={tipo} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{tipo}</span>
+                      <span className="text-gray-600">{formatCurrency(valor)}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+              {Object.keys(eventsChartData?.porTipo || {}).length === 0 && (
+                <div className="text-center text-gray-500 py-4">
+                  Nenhum dado disponível
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Gráfico por Ano */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="bg-white border-b border-gray-100">
+            <CardTitle className="flex items-center gap-3 text-gray-900">
+              <Calendar className="h-6 w-6 text-gray-600" />
+              Distribuição por Ano
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 bg-white">
+            <div className="space-y-4">
+              {Object.entries(eventsChartData?.porAno || {}).sort(([a], [b]) => a.localeCompare(b)).map(([ano, count]) => {
+                const maxValue = Math.max(...Object.values(eventsChartData?.porAno || {}));
+                const percentage = maxValue > 0 ? (count / maxValue * 100).toFixed(1) : '0';
+                
+                return (
+                  <div key={ano} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{ano}</span>
+                      <span className="text-gray-600">{count} eventos</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+              {Object.keys(eventsChartData?.porAno || {}).length === 0 && (
+                <div className="text-center text-gray-500 py-4">
+                  Nenhum dado disponível
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Resumo da Análise de Eventos */}
+      <Card className="bg-white border-gray-200 shadow-sm">
+        <CardHeader className="bg-white border-b border-gray-100">
+          <CardTitle className="flex items-center gap-2 text-gray-900">
+            <Calendar className="h-5 w-5 text-gray-600" />
+            Resumo da Análise
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="bg-white">
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Período analisado:</span>
+              <span className="text-sm font-medium">
+                {format(dateRange.startDate, 'dd/MM/yyyy')} - {format(dateRange.endDate, 'dd/MM/yyyy')}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Região:</span>
+              <span className="text-sm font-medium">
+                {selectedRegion === 'all' ? 'Todas' : selectedRegion}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Núcleo:</span>
+              <span className="text-sm font-medium">
+                {selectedNucleus === 'all' ? 'Todos' : nuclei?.find(n => n.id.toString() === selectedNucleus)?.name}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Total de eventos:</span>
+              <span className="text-sm font-medium">
+                {eventsMetrics?.totalEventos?.toLocaleString('pt-BR') || '0'}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

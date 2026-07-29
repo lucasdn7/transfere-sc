@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,6 +29,7 @@ interface ProcessFormData {
   latitude?: number;
   longitude?: number;
   link_plataforma_governo?: string;
+  contrato_assinado: boolean;
 }
 
 interface Parcel {
@@ -58,6 +60,20 @@ export function ProcessForm({ onSuccess, onCancel, initialData, isEdit = false }
   const [currentParcels, setCurrentParcels] = useState<Parcel[]>([]);
   const { toast } = useToast();
   
+  // Função para pré-selecionar contrato assinado baseado no status
+  const shouldPreSelectContratoAssinado = (statusName?: string): boolean => {
+    if (!statusName) return false;
+    const statusesThatPreSelect = [
+      'Contrato assinado',
+      'Em pagamento',
+      'Termo de aditivo',
+      'Em prestação de contas',
+      'Em Análise',
+      'Finalizado'
+    ];
+    return statusesThatPreSelect.includes(statusName);
+  };
+  
   const { register, handleSubmit, formState: { errors }, setValue, watch, control } = useForm<ProcessFormData>({
     defaultValues: initialData ? {
       process_number: initialData.process_number || '',
@@ -75,7 +91,10 @@ export function ProcessForm({ onSuccess, onCancel, initialData, isEdit = false }
       latitude: initialData.latitude || 0,
       longitude: initialData.longitude || 0,
       link_plataforma_governo: initialData.link_plataforma_governo || '',
-    } : {},
+      contrato_assinado: (initialData as any)?.contrato_assinado || shouldPreSelectContratoAssinado(initialData.status_processos?.nome),
+    } : {
+      contrato_assinado: false,
+    },
   });
 
   // Função para lidar com mudanças nas parcelas
@@ -241,6 +260,7 @@ export function ProcessForm({ onSuccess, onCancel, initialData, isEdit = false }
         latitude: data.latitude || null,
         longitude: data.longitude || null,
         link_plataforma_governo: data.link_plataforma_governo || null,
+        contrato_assinado: data.contrato_assinado,
       };
 
       console.log('Dados do processo preparados:', processData);
@@ -465,6 +485,21 @@ export function ProcessForm({ onSuccess, onCancel, initialData, isEdit = false }
               {errors.status_name && (
                 <p className="text-sm text-red-600">{errors.status_name.message}</p>
               )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contrato_assinado"
+                  {...register('contrato_assinado')}
+                />
+                <label 
+                  htmlFor="contrato_assinado" 
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Contrato assinado
+                </label>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

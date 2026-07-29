@@ -7,13 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Search, Plus, Filter, Download, Trash2, Edit, Eye, Calendar, MapPin, Users, ChevronLeft, ChevronRight, LayoutGrid, List, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { ProcessForm } from '@/components/forms/ProcessForm';
 
 function useDebouncedValue<T>(value: T, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -30,6 +31,8 @@ export default function Processes() {
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
   const [page, setPage] = useState(1);
   const pageSize = 20;
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingProcess, setEditingProcess] = useState<any | null>(null);
   
   // Filtros persistidos
   const [filters, setFilters] = useState({
@@ -289,7 +292,12 @@ export default function Processes() {
               Exportar CSV
             </Button>
             {isAuthenticated && (
-              <Button>
+              <Button
+                onClick={() => {
+                  setEditingProcess(null);
+                  setIsFormOpen(true);
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Novo Processo
               </Button>
@@ -445,7 +453,12 @@ export default function Processes() {
                       </DropdownMenuItem>
                       {isAuthenticated && (
                         <>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingProcess(process);
+                              setIsFormOpen(true);
+                            }}
+                          >
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
@@ -546,7 +559,12 @@ export default function Processes() {
                           </DropdownMenuItem>
                           {isAuthenticated && (
                             <>
-                              <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setEditingProcess(process);
+                                setIsFormOpen(true);
+                              }}
+                            >
                                 <Edit className="h-4 w-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
@@ -610,6 +628,38 @@ export default function Processes() {
           </p>
         </div>
       )}
+
+      {/* Modal de criação/edição de processo */}
+      <Dialog
+        open={isFormOpen}
+        onOpenChange={(open) => {
+          setIsFormOpen(open);
+          if (!open) {
+            setEditingProcess(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>
+              {editingProcess ? 'Editar Processo' : 'Novo Processo'}
+            </DialogTitle>
+          </DialogHeader>
+          <ProcessForm
+            initialData={editingProcess || undefined}
+            isEdit={!!editingProcess}
+            onCancel={() => {
+              setIsFormOpen(false);
+              setEditingProcess(null);
+            }}
+            onSuccess={() => {
+              setIsFormOpen(false);
+              setEditingProcess(null);
+              refetch();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

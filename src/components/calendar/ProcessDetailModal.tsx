@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ExternalLink, MapPin, Calendar, DollarSign, X, Save, AlertCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ExternalLink, MapPin, Calendar, DollarSign, X, Save, AlertCircle, FileCheck2 } from "lucide-react";
 import { formatCurrency } from "@/utils/processUtils";
 import { useNavigate } from "react-router-dom";
 import { useProcessParcels } from "@/hooks/useProcessParcels";
@@ -41,6 +42,12 @@ export function ProcessDetailModal({ process, isOpen, onClose }: ProcessDetailMo
     status: process?.status || '',
     observacoes: process?.observations || ''
   });
+  const [wasStatusBeforeContract, setWasStatusBeforeContract] = useState<string | null>(
+    process?.status && process.status !== 'Contrato Assinado' ? process.status : null
+  );
+  const [hasSignedContract, setHasSignedContract] = useState<boolean>(
+    (process?.status || process?.status_processos?.nome) === 'Contrato Assinado'
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   if (!process) return null;
@@ -94,6 +101,26 @@ export function ProcessDetailModal({ process, isOpen, onClose }: ProcessDetailMo
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleContratoAssinadoToggle = (checked: boolean | string) => {
+    const isChecked = checked === true;
+    setHasSignedContract(isChecked);
+
+    setFormData(prev => {
+      if (isChecked) {
+        if (prev.status && prev.status !== 'Contrato Assinado') {
+          setWasStatusBeforeContract(prev.status);
+        }
+        return { ...prev, status: 'Contrato Assinado' };
+      }
+
+      if (wasStatusBeforeContract) {
+        return { ...prev, status: wasStatusBeforeContract };
+      }
+
+      return { ...prev, status: '' };
+    });
   };
 
   const validateForm = () => {
@@ -194,12 +221,20 @@ export function ProcessDetailModal({ process, isOpen, onClose }: ProcessDetailMo
             </div>
           </DialogTitle>
           <div className="flex items-center gap-2">
-            <Badge 
-              variant="outline" 
-              className={`${getStatusColor(safe(() => process.status_processos?.nome, ''))} text-white border-0`}
-            >
-              {safe(() => process.status_processos?.nome, 'Não definido')}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge 
+                variant="outline" 
+                className={`${getStatusColor(safe(() => process.status_processos?.nome, ''))} text-white border-0`}
+              >
+                {safe(() => process.status_processos?.nome, 'Não definido')}
+              </Badge>
+              {(process?.status_processos?.nome === 'Contrato Assinado' || hasSignedContract) && (
+                <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                  <FileCheck2 className="h-3 w-3" />
+                  Contrato assinado
+                </Badge>
+              )}
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -314,22 +349,34 @@ export function ProcessDetailModal({ process, isOpen, onClose }: ProcessDetailMo
                 Status {isEditing && <span className="text-red-500">*</span>}
               </Label>
               {isEditing ? (
-                <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Em análise">Em análise</SelectItem>
-                    <SelectItem value="Aprovado">Aprovado</SelectItem>
-                    <SelectItem value="Em andamento">Em andamento</SelectItem>
-                    <SelectItem value="Contrato Assinado">Contrato Assinado</SelectItem>
-                    <SelectItem value="Em pagamento">Em pagamento</SelectItem>
-                    <SelectItem value="Termo de Aditivo">Termo de Aditivo</SelectItem>
-                    <SelectItem value="Em prestação de contas">Em prestação de contas</SelectItem>
-                    <SelectItem value="Finalizado">Finalizado</SelectItem>
-                    <SelectItem value="Cancelado">Cancelado</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-3">
+                  <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Em análise">Em análise</SelectItem>
+                      <SelectItem value="Aprovado">Aprovado</SelectItem>
+                      <SelectItem value="Em andamento">Em andamento</SelectItem>
+                      <SelectItem value="Em pagamento">Em pagamento</SelectItem>
+                      <SelectItem value="Termo de Aditivo">Termo de Aditivo</SelectItem>
+                      <SelectItem value="Em prestação de contas">Em prestação de contas</SelectItem>
+                      <SelectItem value="Finalizado">Finalizado</SelectItem>
+                      <SelectItem value="Cancelado">Cancelado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="contrato_assinado"
+                      checked={hasSignedContract}
+                      onCheckedChange={handleContratoAssinadoToggle}
+                    />
+                    <Label htmlFor="contrato_assinado" className="text-sm flex items-center gap-1">
+                      <FileCheck2 className="h-4 w-4 text-blue-600" />
+                      Marcar como contrato assinado
+                    </Label>
+                  </div>
+                </div>
               ) : (
                 <Input
                   value={safe(() => process.status_processos?.nome, 'Não definido')}
